@@ -19,9 +19,18 @@ dependencies = [
 		'requests',
 		'setuptools<66.0',
 		'numpy',
+		'scipy',
 		'iminuit',
-		'jupyterlab',
-		'ipywidgets',
+    		# last stable
+		"ipywidgets>=8.1.0",
+    		# native JavaScript bridge
+	        "jupyterlab_widgets>=3.0.0",
+    		# uptodate JupyterLab
+    		"jupyterlab>=4.2.0",
+		# New Jupyter Notebook (v7+), based on JupyterLab
+    		"notebook>=7.2.0",
+		# best Kernel handling
+    		"ipykernel>=6.29.0",
 		'fonttools',
 		'pyqt5',
 		]

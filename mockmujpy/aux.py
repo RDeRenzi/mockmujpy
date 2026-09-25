@@ -53,6 +53,63 @@ def _available_components_():
     # list of just mucomponents method names
     return available_components
 
+def make_copy(test):
+    """
+    copy groups and, in case, the test data that
+    """
+
+    from importlib import resources
+    from os import getcwd, access, W_OK, listdir, mkdir, remove
+    from os.path import join, isdir, islink, isfile
+    from shutil import copyfile as cp
+
+    # copy grp files
+    startup_path = getcwd()
+    writeable = access(startup_path, W_OK)
+    grp_dir = join(startup_path,"groups")
+    if writeable:
+        if not isdir(grp_dir): mkdir(grp_dir)
+        for file in listdir(resources.files("mockmujpy.tests").joinpath("groups")):
+            srcfile = resources.files("mockmujpy.tests").joinpath("groups").joinpath(file)
+            destfile = join(grp_dir,file)
+            if not isfile(destfile): cp(srcfile,destfile)
+
+        # copy      return True
+        if test:
+            fit = "fit_"+test.lower()
+            fit_dir = join(startup_path,"fit")
+            if islink(fit_dir): remove(fit_dir)
+            if isdir(fit_dir): # clean it up
+                for file in listdir(fit_dir):
+                    pathfil = join(fit_dir,file) 
+                    remove(pathfil)
+            else: # make it  
+                mkdir(fit_dir)
+            for file in listdir(resources.files("mockmujpy.tests").joinpath(fit)):
+                srcfile = resources.files("mockmujpy.tests").joinpath(fit).joinpath(file)
+                destfile = join(fit_dir,file)
+                cp(srcfile,destfile)
+
+   #         copy data files
+            data = "data_"+test.lower()
+            data_dir = join(startup_path,"data")
+            if islink(data_dir): remove(data_dir)
+            if isdir(data_dir):  # clean it up
+                for file in listdir(data_dir):
+                    pathfil = join(data_dir,file) 
+                    remove(pathfil)
+            else: # make it
+                mkdir(data_dir)
+            for file in listdir(resources.files("mockmujpy.tests").joinpath(data)):
+                srcfile = resources.files("mockmujpy.tests").joinpath(data).joinpath(file)
+                destfile = join(data_dir,file)
+                cp(srcfile,destfile)
+            return data_dir
+        else:
+            return True
+    else:
+        return False
+
 def derun(string):
     """
     parses string, producing a list of runs; 
@@ -177,11 +234,11 @@ def get_gtotals(suite):
     for k,runs in enumerate(suite._the_runs_):
         tsum = 0
         ggs = []
-        gts = []
         for j,group in enumerate(grc):
+            gsum = 0
             for counter in group:
-                gsum = 0
                 for j,run in enumerate(runs): # add values for runs to add
+                    suite.log('inside get_gtotals counter {} suite.datafile[-3:] = {}'.format(counter,suite.datafile[-3:]))
                     if suite.datafile[-3:]=='bin' or suite.datafile[-3:]=='mdu' or suite.datafile[-4:]=='root':
                         n1 = suite.offset+suite.nt0[counter] 
                     histo = array(run.get_histo_vector(counter,1)).sum() 
@@ -189,9 +246,9 @@ def get_gtotals(suite):
                     tsum += histo
             gggs = '{:.2f}'.format(gsum/1e6)+'Mev'
             ggs.append(gggs)
-            gts.append('{:.2f}'.format(tsum/1e6)+'Mev')
         gs.append(ggs)
-        ts.append(gts)
+        ts.append('{:.2f}'.format(tsum/1e6)+'Mev')
+    suite.log('inside get_gtotals ts = {}, gs  = {}, ns {},  '.format(ts,gs,suite._the_runs_[0][0].get_binWidth_ns()))
     return ts, gs, '{:.3}'.format(suite._the_runs_[0][0].get_binWidth_ns()), str(suite.histoLength)
  
 def get_grouping(groupcsv):
@@ -601,56 +658,104 @@ def check_dashboard_json(dashboard):
                 if key not in allowed: return '{}{} pardict {} keys'.format(component['name'],kc,kp)
     return ''
 
+
 ######################
 # Mock mujpy classes #
 ######################
 
 class suite():
-    """Mock suite"""
+    """Mock suite: ignores runlist, considers groups"""
 
     def __init__(self, datafile , runlist , grp_calib , offset , startuppath, console = 'print',mplot=False):
-    from os.path import join
-    from os import getcwd
-    self.loadfirst = True
-    self.nruns = 1
-    self.nt0 = [0,0,0,0]
-    self.histolength = 2
-    strtpth = getcwd()
-    self.__fitpath__ = join(strtpth,'fit')
-    self.suite.__datapath__ = join(strtpth,'data')
-    self.groups = grp_calib
-    self.datafile = datafile
-    self.offset = offset
-    self._the_facility_ = 'PSI'
-    class run:
-        def get_timeStart_vector(self):
-            return '01-MAY-21 15:14:00'
-        def get_timeStop_vector(self):
-            return '01-MAY-21 15:40:31'
-        def get_comment(self):
-            return 'mock comment'
-        def get_sample(self):
-            return 'MnBi6T10'
-        def get_orient(self):
-            return 'pellet'
-        def get_temp(self):
-            return '30.1K'
-        def get_field(self):
-            return '100 G'
-        def get_binWidth_ns(eslf):
-            return 0.391
-        def get_histo_vector(k,binning):
-            from numpy import array
-            return array([1234567,23456])
-    self._the_runs_ = [[run()]]
+        from os.path import join
+        from os import getcwd
+        self.loadfirst = True
+        self.log = console
+        self.nruns = 1
+        self.nt0 = [0,0,0,0]
+        self.histoLength = 2
+        strtpth = getcwd()
+        self.__fitpath__ = join(strtpth,'fit')
+        self.__datapath__ = join(strtpth,'data')
+        self.datafile = datafile
+        self.offset = offset
+        self._the_facility_ = 'PSI'
+        console('inside suite before run')
+        class run():
+            def get_timeStart_vector(self):
+                return '01-MAY-21 15:14:00'
+            def get_timeStop_vector(self):
+                return '01-MAY-21 15:40:31'
+            def get_comment(self):
+                return 'mock comment'
+            def get_sample(self):
+                return 'MnBi6T10'
+            def get_orient(self):
+                return 'pellet'
+            def get_temp(self):
+                return '30.1K'
+            def get_field(self):
+                return '100 G'
+            def get_binWidth_ns(self):
+                return 0.391
+            def get_histo_vector(self,k,binning):
+                from numpy import array
+                return array([1234567,23456])
+            def get_numberHisto_int(self):
+                return 4
+        self.groups = grp_calib
+        self._the_runs_ = [[run()]]
+        self.store_groups()
+        self.log('inside suite after store_goups self.grouping = {}'.format(self.grouping))
+
+    def store_groups(self):
+        """
+        from self.groups dashboard shorthand dict to self.grouping dict alpha, lists of histogram numbers  
+        """
+
+        from mockmujpy.aux import get_grouping
+        self.log('inside store_groups 0')
+        self.log('inside store_groups runs {}'.format(self._the_runs_[0][0].get_histo_vector(0,1)))
+        for k,group in enumerate(self.groups):
+            fgroup, bgroup, alpha = get_grouping(group['forward']), get_grouping(group['backward']), group['alpha']
+            if alpha>0 and self.check_group(fgroup) and self.check_group(bgroup) and not isinstance(fgroup,str) and not isinstance(bgroup,str): # checks legal grpcalib_file
+                if k==0: self.grouping=[]
+                self.grouping.append({'forward':fgroup, 'backward':bgroup, 'alpha':alpha})
+                # fgroup bgroup are two np.arrays of integers
+            else:
+                self.log('forw {}, backw {}, alpha {:.2f}, Nhisto = {}'.format(fgroup,bgroup,alpha,
+                                self._the_runs_[0][0].get_numberHisto_int()))
+                self.log('Groups calibration file corrupted')
+                return False
+        return True
+
+    def check_group(self,group):
+        """
+        rough check that this is a group of existing detectors
+        """
+
+        # numberHisto_int is the number of physics detectors
+        # RedGreen mode has more than one period (in Isis parlance) for different stimuli ON or OFF 
+        # for this purpose nexus detector counts have three indices: period, detector, bin
+        # MusrRoot instead has offsets, typically [0,20,40,80] or [0,10,20,30], reflected in the label Histo No
+        # whereas the list self._histo.counts() has two indices: histogram, bin, and histogram numbers are contiguous
+        # e.g. on lem for numberHisto_int = 8 and offsets [0,10] indices 0,...,7 are the original histos and 8,...,15 are PPC
+        numberHisto = self._the_runs_[0][0].get_numberHisto_int()
+        periods = 1
+        if 'get_RedGreen_offsets' in self._the_runs_[0][0].__dir__(): # RedGreen may be present
+            periods = len(self._the_runs_[0][0].get_RedGreen_offsets()) # are there RedGreen copies (periods>1)?
+        if 'get_beamline' in self._the_runs_[0][0].__dir__(): # PSI only
+            numberHisto = numberHisto*periods           
+        return (group>=0).all()*(group<numberHisto).all()
+
 
 class mufit():
-    def __init__(self,suite,dashboard_file,dash_log = None) # writes text to board_box
+    def __init__(self,suite,dashboard_file,dash_log = None): # writes text to board_box
         dash_log('                successfully lauched mock mufit!')
         self.log = dash_log
 
 class mufitplot():
-    def __init__(plot_range, fit, rotating_frame_frequencyMHz = rotfreq, plot_out = None, fig_fit = None) # plots in self.figure_box
+    def __init__(plot_range, fit, rotating_frame_frequencyMHz = 0, plot_out = None, fig_fit = None): # plots in self.figure_box
         fit.log('                  successfully lauched mock mufitplot!')
         fit.log('sorry, no plots ;)')
 

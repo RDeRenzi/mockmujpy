@@ -490,6 +490,8 @@ class dashed(object):
                 grp_calib = [{'forward':forward, 
                           'backward':backward, 
                           'alpha':float(self.suite_box.children[1].children[2].value)}]
+
+                self.log('grp_calib = {}'.format(grp_calib))
             else:
                 raise NameError('No Group0')
         except ValueError as e:
@@ -515,12 +517,15 @@ class dashed(object):
                     return
                 grp_calib.append(grp_c)
 
+        self.log('full grp_calib = {}'.format(grp_calib))
         offset = self.suite_box.children[1].children[8].value
         if os.path.isfile(datafile):
             if runlist:
                 self.suite = suite(datafile , runlist , grp_calib , offset , 'input setuppath not used' ,console=self.log) #startuppath is set in suite
                 # self.log info
+                self.log('self.suite.nruns = {}'.format(self.suite.nruns))
                 if self.suite.loadfirst: # suite loaded the data
+                    self.log('Entering hold_trait_notifications()')
                     # inserted the hold_trait_notification to preserve Windows:
                     with self.suite_box.hold_trait_notifications():
                         starttime_options = [' '.join(self.suite._the_runs_[k][0].get_timeStart_vector()) for k in range(self.suite.nruns)]
@@ -545,6 +550,10 @@ class dashed(object):
                         self.suite_box.children[0].children[3].value = comment_options[1]
 
                         totalcounts, groupcounts, nsbin, maxbin = get_gtotals(self.suite)
+                        self.log('tot {}, gtot {}, ns {}, maxb {}'.format(totalcounts,
+                                                                        groupcounts,
+                                                                        nsbin,
+                                                                        maxbin))
                         self.suite_box.children[0].children[4].value = nsbin
                         self.suite_box.children[0].children[5].value = maxbin 
                         goptions = ['Group counts']
@@ -555,12 +564,13 @@ class dashed(object):
                             for k,gc in enumerate(groupcount):
                                 counts = ': '+gc
                                 goptions.append(run+'.'+str(k)+counts)
-                            toptions.append(run+': '+totalcount[0])
+                            toptions.append(run+': '+totalcount)
                         
                         self.log('suite __fitpath__ is {}'.format(self.suite.__fitpath__))
                         self.suite_box.children[1].children[6].options = goptions
                         self.suite_box.children[1].children[7].options = toptions
                         self.command_box.children[0].children = self.command_0.children
+
                         #self.LF_modal, self.LF_button =  ipyw_path_file_dial(
                         #        self.LF_button,self._on_LF,
                         #        path = self.suite.__fitpath__,
@@ -881,7 +891,7 @@ class dashed(object):
         
         # 2. Inietta il CSS nel notebook tramite un widget HTMLi
         css_widget = HTML(value=custom_css)
-        display(css_widget)
+        #display(css_widget)
         command_width = ['38%','21%','11%','14%','8%','8%']
         self.figure_box = Output(layout=Layout(width='100%',height='410px'))# width='900px'
         self.board_box = Output(layout=Layout(width='100%',height='650px',overflow_y='auto'))
@@ -942,12 +952,15 @@ class dashed(object):
                     layout={'width':'100%','border':self.model_button_color}) # 'width':board_width
         #panels = HBox([dash,VBox([self.figure_box,self.board_box])],layout={'width':'100%'})
         dash.add_class("inter-font-container")
-        self.fetch_box(Text(value='Mock fetch data'))
+        self.fetch_box = Text(value='Mock fetch data')
+        help_box = Textarea(
+                            disabled=True, # Prevents users from editing the text
+                            layout=Layout(width='900px',height='660px'))
         help_text = 'Available components,  by unique two letters, and their Minuit parameters, (x is a time array [μs])'
         for c in _available_components_():
             help_text += '\n{}: {}'.format(c['name'],c['tip'].replace('\n    ',' ',2)) 
         help_box.value = help_text
-        logo_file = resources.files('mujpy.logo').joinpath("logo.png")
+        logo_file = resources.files('mockmujpy.logo').joinpath("logo.png")
         logo_image = logo_file.read_bytes()
         logo = Box([Image(value=logo_image)],layout=Layout(width='114px',height='100px'))
         about_text = " Mock mujpy        "+'v'+'3.0.demo'
@@ -972,6 +985,6 @@ class dashed(object):
         self.tab.add_class(custom_css)
         self.tab.titles = ['Fit','Fetch data','Log','Dialogs','Help','About']
         self.tab.selected_index = 0
-        display(self.tab)
+        display(css_widget,self.tab)
         # Button( icon = 'fa-trash' #, <i class="fa-thin fa-trash"></i>
         #https://stackoverflow.com/questions/60116974/what-is-the-icon-argument-for-ipywidgets-button
