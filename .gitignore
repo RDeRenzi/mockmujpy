@@ -1,0 +1,75 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+example/cache/*.log
+example/csv/*.csv
+example/fit/*_A1.json
+example/fit/*_A20.json
+example/fit/*_A21.json
+example/fit/*_B1.json
+example/fit/*_B20.json
+example/fit/*_B21.json
+example/fit/*_C1.json
+example/fit/*_C2.json
+example/oldies
+example/_pycache__
+example/v.1.0/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+
+# Sphinx documentation
+docs/_build/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# celery beat schedule file
+celerybeat-schedule
+
+# dotenv
+.env
+
+# virtualenv
+.venv
+venv/
+ENV/
+
+
+TEST_TMP/
+wheelhouse*/
+!tests/build/
+.gitrev
+.coverage
+*.orig
+*.rej
+*.dep
+*.swp
+*~
+
+tags
+TAGS
+MANIFEST

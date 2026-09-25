@@ -1,0 +1,50 @@
+[project]
+name = "mockmujpy"
+dynamic = ["version"]
+description = "Mock mujpy ipywidgets GUI"
+authors = [ { name = "Roberto De Renzi", email = "roberto.derenzi@unipr.it" }, ]
+keywords =["ipywidgets", "muSR"]
+readme = "README.rst"
+license = "GPL-3.0-or-later" 
+classifiers = [
+  "Intended Audience :: ipywidgets dev.",
+  "# SPDX-License-Identifier: GPL-3.0-or-later",
+  "Programming Language :: Python :: 3",
+  "Framework :: Jupyter :: Jupyterlab",
+  "Operating System :: OS Independent",
+  "Topic :: Scientific/Engineering :: Physics"]
+requires-python = ">=3.12"
+dependencies = [
+		'matplotlib',
+		'requests',
+		'setuptools<66.0',
+		'numpy',
+		'iminuit',
+		'jupyterlab',
+		'ipywidgets',
+		'fonttools',
+		'pyqt5',
+		]
+
+[build-system]
+requires = [
+    "setuptools>=80", "setuptools-scm[simple]>=9.2", "wheel",
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+version_file = "mockmujpy/_version.py"
+
+[tool.setuptool.package.find]
+include = ["mujpy","mujpy.tests"]
+
+[tool.setuptools.package-data]
+"mujpy.tests" = [
+	"fit_gps.*",
+	"fit_root.*",
+	"fit_nexus.*",
+	"data_gps.*",
+	"data_root.*",
+	"data_nexus.*",
+	"groups.*"
+]
