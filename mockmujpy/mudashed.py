@@ -16,7 +16,7 @@ class dashed(object):
     def __init__(self,facility='PSI',test='GPS'):
         '''Launches the gui'''
  
-        from mockmujpy.mckaux import make_copy
+        from mockmujpy.aux import make_copy
         from os import getcwd
 
         self.startuppath = getcwd()
@@ -131,9 +131,9 @@ class dashed(object):
         """
 
         import json
-        from mockmujpy.mckaux import mufit
-        from mockmujpy.mckaux import mufitplot
-        from mockmujpy.mckaux import ipyw_warning_dial, show_hide_tab
+        from mockmujpy.aux import mufit
+        from mockmujpy.aux import mufitplot
+        from mockmujpy.aux import ipyw_warning_dial, show_hide_tab
 
         OK = False if self._global() else True
         if not OK:
@@ -186,8 +186,8 @@ class dashed(object):
         # if guess: mufit(plot_range,dashboard_file, no_fit = not guess,out=self.figure_box)
         # mufitplot(plot_range, guess = guess, rotating_frame_frequencyMHz = rotfreq, plot_out = self.figure_box)
         import json
-        from mockmujpy.mckaux import mufit
-        from mockmujpy.mckaux import mufitplot
+        from mockmujpy.aux import mufit
+        from mockmujpy.aux import mufitplot
         if self.build_dashed(): # creates self.dashboard and returns True if no validation raise occurred
             dashboard_file = self.suite.__fitpath__+'dashed.json'
             #self.log('debug mudashed._on_Plot: dumping {}'.format(dashboard_file))
@@ -324,7 +324,7 @@ class dashed(object):
 
         import json
         import os
-        from mockmujpy.mckaux import check_dashboard_json
+        from mockmujpy.aux import check_dashboard_json
 
         file_json = self.suite.__fitpath__+'dashed.json'
         if os.path.isfile(file_json):
@@ -349,7 +349,7 @@ class dashed(object):
         Choose fit model to load from ./fit/ folder
         '''
 
-        from mockmujpy.mckaux import check_dashboard_json 
+        from mockmujpy.aux import check_dashboard_json 
         import json
         import os
 
@@ -378,11 +378,11 @@ class dashed(object):
     
         # command box, global box: VBox of rows (HBox)
         # model_box: HBox of two columns (VBox) of components (VBox) of rows, pardicts (HBox) of component widgets
-        from mockmujpy.mckaux import validmodel, find_model_difference, _available_components_
+        from mockmujpy.aux import validmodel, find_model_difference, _available_components_
         from json import loads as str2lst
         from ipywidgets import Text, IntText, Layout, Button, HBox,  \
                                VBox, ToggleButtons, Label, FloatText
-        from mockmujpy.mckaux import ipyw_radio_dial, ipyw_warning_dial, show_hide_tab
+        from mockmujpy.aux import ipyw_radio_dial, ipyw_warning_dial, show_hide_tab
 
         if change['type'] == 'change' and change['name'] == 'value':
 
@@ -474,10 +474,10 @@ class dashed(object):
         """
         
         import os
-        from mockmujpy.mckaux import suite
-        from mockmujpy.mckaux import derun, get_title, get_gtotals, get_grouping 
-        from mockmujpy.mckaux import check_multigroup
-        from mockmujpy.mckaux import ipyw_warning_dial, ipyw_path_file_dial, show_hide_tab
+        from mockmujpy.aux import suite
+        from mockmujpy.aux import derun, get_title, get_gtotals, get_grouping 
+        from mockmujpy.aux import check_multigroup
+        from mockmujpy.aux import ipyw_warning_dial, ipyw_path_file_dial, show_hide_tab
         from numpy import all
 
         self.log('runlist = {}'.format(runlist))
@@ -654,7 +654,7 @@ class dashed(object):
         inserted further goups, check syntax and check that RL is pressed (again?)
         """
 
-        from mockmujpy.mckaux import check_multigroup, ipyw_warning_dial, show_hide_tab
+        from mockmujpy.aux import check_multigroup, ipyw_warning_dial, show_hide_tab
         if change['owner'].tooltip[0] == 'f':
             remind = True
             grp = change['new']
@@ -690,7 +690,7 @@ class dashed(object):
         from ipywidgets.widgets import Output, ToggleButtons, Button, Label, Layout, Text, IntText
         from ipywidgets.widgets import Dropdown, FloatText, HBox, VBox, HTML, Box, Image, Textarea
         from ipywidgets.widgets import Tab
-        from mockmujpy.mckaux import _available_components_, ipyw_path_file_dial, ValueButton
+        from mockmujpy.aux import _available_components_, ipyw_path_file_dial, ValueButton
         from datetime import datetime
         import os
         from importlib import resources
