@@ -21,7 +21,7 @@ def _available_components_():
         used in mufit and mudashed
     """
 
-    from mockmujpy.aux import mumodel
+    from mockmujpy.mckaux import mumodel
     from iminuit import describe
     
     available_components = [] # generates the template of available components.
@@ -310,7 +310,7 @@ def check_multigroup(group,alpha):
             error message if not ok
     """
 
-    from mockmujpy.aux import get_grouping
+    from mockmujpy.mckaux import get_grouping
     try:
         forward, backward = group.split('-')
         fg, bg = get_grouping(forward), get_grouping(backward)
@@ -332,7 +332,7 @@ def ipyw_yes_no_dialog(title="Check!",message=""):
             yes_btn.value True/False 
     """
 
-    from mockmujpy.aux import create_overlay_layout, create_dialog_box_layout
+    from mockmujpy.mckaux import create_overlay_layout, create_dialog_box_layout
     title_html = HTML(f"<h3>{title}</h3>") #⚠️
     message_html = HTML(f"<p>{message}</p>", layout=Layout(margin='10px 0px 20px 0px'))
     yes_btn = ValueButton(description="Yes", layout=Layout(width='100px', align_self='center'))
@@ -356,7 +356,7 @@ def ipyw_warning_dial(title="Warning", message=""):
                       2) setattr(overlay.layout, 'display', 'flex')
     """
 
-    from mockmujpy.aux import create_overlay_layout, create_dialog_box_layout
+    from mockmujpy.mckaux import create_overlay_layout, create_dialog_box_layout
     # Elementi dell'interfaccia
     title_html = HTML(f"<h3>{title}</h3>") #⚠️
     message_html = HTML(f"<p>{message}</p>", layout=Layout(margin='10px 0px 20px 0px'))
@@ -379,7 +379,7 @@ def ipyw_radio_dial(options, title="<b>Select one option:</b>"):
     observe(overlay.layout,names='display') e.g. to toggle tab.selected_index for a tabbed output
     """
 
-    from mockmujpy.aux import create_overlay_layout, create_dialog_box_layout
+    from mockmujpy.mckaux import create_overlay_layout, create_dialog_box_layout
     title_html = HTML(value=f"<h3>{title}</h3>")
     
     radio = RadioButtons(
@@ -410,7 +410,7 @@ def ipyw_path_file_dial(target_button, callback, path=None, filter_pattern=None,
     * Note: a single click on a folder (📁) navigates inside it.
     """
 
-    from mockmujpy.aux import create_overlay_layout, create_dialog_box_layout
+    from mockmujpy.mckaux import create_overlay_layout, create_dialog_box_layout
     if path is None:
         current_dir = os.getcwd()
     else:
@@ -539,7 +539,7 @@ def validmodel(model):
         used in mudashed
     """
 
-    from mockmujpy.aux import _available_components_
+    from mockmujpy.mckaux import _available_components_
     available_components =_available_components_() # creates list automagically from mucomponents
     component_names = [available_components[i]['name'] 
                             for i in range(len(available_components))]
@@ -713,7 +713,7 @@ class suite():
         from self.groups dashboard shorthand dict to self.grouping dict alpha, lists of histogram numbers  
         """
 
-        from mockmujpy.aux import get_grouping
+        from mockmujpy.mckaux import get_grouping
         self.log('inside store_groups 0')
         self.log('inside store_groups runs {}'.format(self._the_runs_[0][0].get_histo_vector(0,1)))
         for k,group in enumerate(self.groups):
